@@ -150,7 +150,15 @@
   `git remote remove libName`
   `git remote rm libName`
 
-如何向你的远程仓库推送(push)、如何从你的远程仓库拉取(pull)文件。
+### 6.别名
+- 创建git cmd别名
+  `git config [level] alias.<newName> <cmdName>`
+
+- 查看定义的别名
+  `git config --global -l | grep alias`
+
+- 取消别名
+  `git config --global --unset alias.<newName>`
 
 [快速跳转](#快速跳转)
 # 快速返回
@@ -167,6 +175,7 @@
 `git help`
 `git help <verb>` or `git <verb> -h`
 - `verb` e.g. config, clone, add...
+- 
 ## 配置
 - 查看所有配置
   `git config -l`
@@ -183,6 +192,13 @@
   git config --global user.name 'hongjiong'
   git config --global user.email hongjiong_zhu@163.com
   ```
+
+  - 别名
+    - 加`[level] alias.<newName> <cmdName>`创建cmd别名
+    - 加`[level] -l | grep alias`查看定义别名
+    - 加`[level] --unset alias.<newName>`取消别名
+    - e.g.`git config --global alias.s 'status -s'`
+
 
 ## 初始化
 - 在当前目录下创建一个.git
