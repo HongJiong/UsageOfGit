@@ -14,13 +14,13 @@
 3. 提交更新，找到暂存区的文件，将快照永久性存储到Git目录(committed)
 
 ## 基础流程
-### 1. 配置并初始化一个仓库(repository)
+### 1.配置并初始化一个仓库(repository)
 - 在已存在目录中初始化仓库(空，无跟踪文件)
    `git init`
 - 克隆现有的仓库
    `git clone`
 
-### 2. 开始或停止跟踪(track)文件、暂存(stage)或提交(commit)更改
+### 2.开始或停止跟踪(track)文件、暂存(stage)或提交(commit)更改
 工作目录下每个文件根据是否纳入版本控制(git已经知道)分为**已跟踪**or**未跟踪**
 ![](img/2024-03-21-16-13-57.png '文件状态变化周期')
 - 查看当前文件状态
@@ -55,7 +55,7 @@
   - 撤销修改
     `git checkout - <file>`
 
-### 3. 配置git来忽略指定的文件
+### 3.配置git来忽略指定的文件
 - 忽略文件(使用失败，待厘清)
   - 创建一个.gitignore文件
     ```
@@ -81,8 +81,8 @@
 
     [^2]:指 shell 所使用的简化了的正则表达式。 星号（*）匹配零个或多个任意字符；[abc] 匹配任何一个列在方括号中的字符 （这个例子要么匹配一个 a，要么匹配一个 b，要么匹配一个 c）； 问号（?）只匹配一个任意字符；如果在方括号中使用短划线分隔两个字符， 表示所有在这两个字符范围内的都可以匹配（比如 [0-9] 表示匹配所有 0 到 9 的数字）。 使用两个星号（\*\*）表示匹配任意中间目录，比如 a/\*\*/z 可以匹配 a/z 、 a/b/z 或 a/b/c/z 等。
 
-### 4.查看提交历史
-- 不传入参数按时间先后顺序列出所有的提交，列出每个提交的 SHA-1 校验和、作者的名字和电子邮件地址、提交时间以及提交说明。
+### 4.历史
+- 查看提交历史，不传入参数按时间先后顺序列出所有的提交，列出每个提交的 SHA-1 校验和、作者的名字和电子邮件地址、提交时间以及提交说明。
   `git log`
   ```
   commit 18dac74e6875ed1da275f53c1762cd8aca675fdc (HEAD -> master, origin/master, origin/HEAD)
@@ -97,6 +97,36 @@
 
     add img for usage-of-github
   ```
+
+- 标签
+  - 列出已有
+    `git tag`
+    匹配"v1.8.5"开头的标签
+    `git tag -l "v1.8.5*"`
+
+  - 创建
+    - 轻量标签
+      `git tag <tagName>`
+    - 附注标签，是存储在 Git 数据库中的一个完整对象， 可以被校验，包含打标签者的名字、电子邮件地址、日期时间，还有一个标签信息，并且可以使用 GNU Privacy Guard （GPG）签名并验证
+      `git tag -a <tagName> -m "tagLog"`
+    - 后期标签，给已提交的版本打标
+      `git tag -a <tagName> <hash>`
+      `git tag <tagName> <hash>`
+
+  - 输出信息
+    `git show <tagName>`
+
+  - 远程共享
+    - `git push`默认不会传标签到远程仓库，需要：
+      `git push <libName> <tagName>`
+    - 推送所有标签
+      `git push <libName> --tags`
+
+  - 删除
+    `git tag -d <tagName>`
+    - 推送删除的标签
+      `git push <libName> :refs/tags/<tagName>`
+      `git push <libName> --delete <tagName>`
 
 ### 5.远程仓库
 - 查看
@@ -280,8 +310,24 @@
   `git pull`
 
 ## 远程推送
-- 将本地仓库推送到远程仓库
-  `git push <libName> <branchName>`
+- 将本地仓库信息推送到远程仓库
+  `git push <libName>`
+  - 加`<branchName>`推送提交
+
+  - 加`<tagName>`将远程共享标签
+  - 加`--tags`将远程共享所有标签
+  - 加`:refs/tags/<tagName>`或`--delete <tagName>`远程删除标签
+
+## 标签
+`git tag`列出已有
+- 加`-l "v*"`列出匹配"v"开头的标签
+- 加`<tagName>`创建轻量标签
+- 加`-a <tagName> -m "tagLog"`创建附注标签
+  - 创建标签再加`<hashHistory>`给历史提交打标
+- 加`-d <tagName>`删除标签
+
+## (git show)
+- 加`<tagName>`打印标签信息
 
 
 # 快速跳转
