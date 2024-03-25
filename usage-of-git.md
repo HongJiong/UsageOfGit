@@ -1,5 +1,5 @@
 # git for windown
-## 概念
+# 概念
 **git有三种状态**
 - 已修改(modified)，表示修改了文件，但还没保存到数据库中
 - 已暂存(staged)，表示对一个已修改的文件做了标记，使之包含在下次提交的快照[^1]中
@@ -13,14 +13,14 @@
 2. 将你想要下次提交的更改选择性地暂存，这样只会将更改的部分添加到暂存区(staged)
 3. 提交更新，找到暂存区的文件，将快照永久性存储到Git目录(committed)
 
-## 基础流程
-### 1.配置并初始化一个仓库(repository)
+# 基础流程
+## 1.配置并初始化一个仓库(repository)
 - 在已存在目录中初始化仓库(空，无跟踪文件)
    `git init`
 - 克隆现有的仓库
    `git clone`
 
-### 2.开始或停止跟踪(track)文件、暂存(stage)或提交(commit)更改
+## 2.开始或停止跟踪(track)文件、暂存(stage)或提交(commit)更改
 工作目录下每个文件根据是否纳入版本控制(git已经知道)分为**已跟踪**or**未跟踪**
 ![](img/2024-03-21-16-13-57.png '文件状态变化周期')
 - 查看当前文件状态
@@ -55,7 +55,7 @@
   - 撤销修改
     `git checkout - <file>`
 
-### 3.配置git来忽略指定的文件
+## 3.配置git来忽略指定的文件
 - 忽略文件(使用失败，待厘清)
   - 创建一个.gitignore文件
     ```
@@ -81,7 +81,7 @@
 
     [^2]:指 shell 所使用的简化了的正则表达式。 星号（*）匹配零个或多个任意字符；[abc] 匹配任何一个列在方括号中的字符 （这个例子要么匹配一个 a，要么匹配一个 b，要么匹配一个 c）； 问号（?）只匹配一个任意字符；如果在方括号中使用短划线分隔两个字符， 表示所有在这两个字符范围内的都可以匹配（比如 [0-9] 表示匹配所有 0 到 9 的数字）。 使用两个星号（\*\*）表示匹配任意中间目录，比如 a/\*\*/z 可以匹配 a/z 、 a/b/z 或 a/b/c/z 等。
 
-### 4.历史
+## 4.历史
 - 查看提交历史，不传入参数按时间先后顺序列出所有的提交，列出每个提交的 SHA-1 校验和、作者的名字和电子邮件地址、提交时间以及提交说明。
   `git log`
   ```
@@ -128,7 +128,7 @@
       `git push <libName> :refs/tags/<tagName>`
       `git push <libName> --delete <tagName>`
 
-### 5.远程仓库
+## 5.远程仓库
 - 查看
   `git remote`
   `git remote show <libName>`
@@ -150,7 +150,7 @@
   `git remote remove libName`
   `git remote rm libName`
 
-### 6.别名
+## 6.别名
 - 创建git cmd别名
   `git config [level] alias.<newName> <cmdName>`
 
@@ -163,6 +163,67 @@
 [快速跳转](#快速跳转)
 # 快速返回
 
+# 分支
+Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，通常称`HEAD`。Git的默认分支名字是 master，与其它分支没有区别。
+
+## 新分支
+- 创建，从`HEAD`看出没有切换到新分支
+  `git branch <branchName>`
+  ![](img/2024-03-25-17-46-25.png)
+- 切换，从`HEAD`看出切换到新分支
+  `git checkout <branchName>`
+- 创建并切换
+  `git checkout -b <branchName>`
+  ![](img/2024-03-25-17-48-32.png)
+
+## 删除
+`git branch -d <branchName>`
+
+## 合并
+- 将所在分支与目标分支合并，并自动提交
+  `git merge <targetBranchName>`
+  - fast-forward:合并(master与hotfix)没有要解决的冲突
+    ![](img/2024-03-25-18-24-54.png)
+  - 不同父继承合并
+    |![](img/2024-03-25-18-28-30.png)||
+    |:---:|---|
+    |↓||
+    |![](img/2024-03-25-18-29-10.png)||
+    
+- 冲突合并：需合并的两个不同的分支中，对同一个文件的同一个部分进行了不同的修改，不会自动提交
+  1.  ```
+      $ git merge iss53
+      Auto-merging index.html
+      CONFLICT (content): Merge conflict in index.html
+      Automatic merge failed; fix conflicts and then commit the result.
+      ```
+  2.  用git status查看冲突(unmerged)信息
+      ```
+      $ git status
+      On branch master
+      You have unmerged paths.
+        (fix conflicts and run "git commit")
+
+      Unmerged paths:
+        (use "git add <file>..." to mark resolution)
+
+          both modified:      index.html
+      no changes added to commit (use "git add" and/or "git commit -a")
+      ```
+  3.  打开冲突文件，其中包含以而写特殊区段
+      > `=======`的上半部分为当前分支(HEAD -> master)的index.html文件，下半部分为目标分支(iss53)的index.html文件
+      ```
+      <<<<<<< HEAD:index.html
+      <div id="footer">contact : email.support@github.com</div>
+      =======
+      <div id="footer">
+      please contact us at support@github.com
+      </div>
+      >>>>>>> iss53:index.html
+      ```
+  4.  手动更改冲突文件，并对其`git add`暂存，就能解决冲突，再`git commit`
+  
+    
 # git命令
 ## 版本更新
 2.17.1之前的，使用
@@ -273,10 +334,13 @@
   `git reset`
   - 加`HEAD <file>`，重定位`HEAD`指针，撤销添加暂存的文件
 
-## (checkout)
-- 
+## 检出(checkout)
+- 移动`HEAD`指针，并将工作目录/文件恢复到`HEAD`指向的版本(相应分支最后一次提交)，原内容不会保存
   `git checkout`
-  - 加`HEAD - <file>`，重定位`HEAD`指针，撤销修改的文件
+  - 加`HEAD - <file>`撤销修改的文件
+  - 加`<branchName>`切换分支
+  - 加`-b <branchName>`创建并切换分支
+
 
 ## 查看提交历史
 - `git log`
@@ -311,6 +375,16 @@
   51a94af - Fix "checkout --track -b newbranch" on detached HEAD
   b0ad11e - pull: allow "git pull origin $something:$current_branch" into an unborn branch
   ```
+  - 查看分支历史
+    ```
+    $ git log --oneline --decorate --graph --all
+    * c2b9e (HEAD, master) made other changes
+    | * 87ab2 (testing) made a change
+    |/
+    * f30ab add feature #32 - ability to add new formats to the
+    * 34ac2 fixed bug #1328 - stack overflow under certain conditions
+    * 98ca9 initial commit of my project
+    ```
 
 ## 远程操作
 `git remote`查看LibName
@@ -345,6 +419,8 @@
 ## (git show)
 - 加`<tagName>`打印标签信息
 
+## 分支
+- adfa
 
 # 快速跳转
 [快速返回](#快速返回)
