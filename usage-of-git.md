@@ -98,9 +98,29 @@
     add img for usage-of-github
   ```
 
+### 5.远程仓库
+- 查看
+  `git remote`
+  `git remote show <libName>`
 
+- 添加
+  `git remote add <libName> <url>`
 
-如何浏览你的项目的历史版本以及不同提交(commits)之间的差异、如何向你的远程仓库推送(push)、如何从你的远程仓库拉取(pull)文件。
+- 拉取
+  `git fetch <libName>`
+  `git pull`
+
+- 推送
+  `git push <libName> <branchName>`
+
+- 重命名
+  `git remote rename oldLibName newLibName`
+
+- 移除
+  `git remote remove libName`
+  `git remote rm libName`
+
+如何向你的远程仓库推送(push)、如何从你的远程仓库拉取(pull)文件。
 
 [快速跳转](#快速跳转)
 # 快速返回
@@ -171,14 +191,6 @@
   $ git add *.c
   $ git add LICENSE
   ```
-
-- 撤销
-  - 撤销提交，新的提交替换旧的提交
-    `git commit --amend`
-  - 撤销添加暂存
-    `git reset HEAD <file>`
-  - 撤销修改
-    `git checkout - <file>`
 
 ## 提交
 - 提交暂存区文件到.git仓库
@@ -254,6 +266,22 @@
   b0ad11e - pull: allow "git pull origin $something:$current_branch" into an unborn branch
   ```
 
+## 远程操作
+`git remote`查看LibName
+- 加`show <libName>`或`-v`查看详细信息
+- 加`add <libName> <url>`添加仓库
+- 加`rename oldLibName newLibName`仓库重命名
+- 加`remove libName`或`rm`移除仓库看
+
+## 拉取远程信息
+- 访问远程仓库拉取所有本地没有的数据，可以随时合并或查看
+  `git fetch <libName>`
+- 访问远程仓库拉取所有本地没有的数据，并合并
+  `git pull`
+
+## 远程推送
+- 将本地仓库推送到远程仓库
+  `git push <libName> <branchName>`
 
 
 # 快速跳转
