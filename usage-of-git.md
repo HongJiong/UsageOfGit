@@ -16,36 +16,44 @@
 ## 基础流程
 ### 1. 配置并初始化一个仓库(repository)
 - 在已存在目录中初始化仓库(空，无跟踪文件)
-   git init
+   `git init`
 - 克隆现有的仓库
-   git clone
+   `git clone`
 
 ### 2. 开始或停止跟踪(track)文件、暂存(stage)或提交(commit)更改
 工作目录下每个文件根据是否纳入版本控制(git已经知道)分为**已跟踪**or**未跟踪**
 ![](img/2024-03-21-16-13-57.png '文件状态变化周期')
 - 查看当前文件状态
-  git status
+  `git status`
 
 - 跟踪文件暂存区(将内容添加到下一次提交中)
-  git add
+  `git add`
 
 - 查看修改
   - 比较工作目录中文件(已修改/未修改)和暂存区文件的差异
-    git diff
+    `git diff`
   - 比较暂存区文件和git仓库文件的差异
-    git diff --staged/--cached
+    `git diff --staged/--cached`
 
 - 提交更新
-  git commit
+  `git commit`
 
 - 移除文件(停止追踪)
   - 有保护机制，加-f包括源文件删除
-    git rm -f
+    `git rm -f`
   - 加--ached，仅从git仓库删除
-    git rm --ached
+    `git rm --ached`
 
 - 移动/重命名文件
-  git mv
+  `git mv`
+
+- 撤销
+  - 撤销提交，新的提交替换旧的提交
+    `git commit --amend`
+  - 撤销添加暂存
+    `git reset HEAD <file>`
+  - 撤销修改
+    `git checkout - <file>`
 
 ### 3. 配置git来忽略指定的文件
 - 忽略文件(使用失败，待厘清)
@@ -73,8 +81,26 @@
 
     [^2]:指 shell 所使用的简化了的正则表达式。 星号（*）匹配零个或多个任意字符；[abc] 匹配任何一个列在方括号中的字符 （这个例子要么匹配一个 a，要么匹配一个 b，要么匹配一个 c）； 问号（?）只匹配一个任意字符；如果在方括号中使用短划线分隔两个字符， 表示所有在这两个字符范围内的都可以匹配（比如 [0-9] 表示匹配所有 0 到 9 的数字）。 使用两个星号（\*\*）表示匹配任意中间目录，比如 a/\*\*/z 可以匹配 a/z 、 a/b/z 或 a/b/c/z 等。
 
+### 4.查看提交历史
+- 不传入参数按时间先后顺序列出所有的提交，列出每个提交的 SHA-1 校验和、作者的名字和电子邮件地址、提交时间以及提交说明。
+  `git log`
+  ```
+  commit 18dac74e6875ed1da275f53c1762cd8aca675fdc (HEAD -> master, origin/master, origin/HEAD)
+  Author: HongJiong <135309490+HongJiong@users.noreply.github.com>
+  Date:   Fri Mar 22 18:37:48 2024 +0800
 
-配置git来忽略指定的文件和文件模式、迅速而简单地撤销误操作、如何浏览你的项目的历史版本以及不同提交(commits)之间的差异、如何向你的远程仓库推送(push)、如何从你的远程仓库拉取(pull)文件。
+    Add files via upload
+
+  commit 96c7015d90f07720a0de5a51e5b7438ccec62e5f
+  Author: HongJiong <hongjiong_zhu@163.com>
+  Date:   Fri Mar 22 18:19:14 2024 +0800
+
+    add img for usage-of-github
+  ```
+
+
+
+如何浏览你的项目的历史版本以及不同提交(commits)之间的差异、如何向你的远程仓库推送(push)、如何从你的远程仓库拉取(pull)文件。
 
 [快速跳转](#快速跳转)
 # 快速返回
@@ -91,283 +117,144 @@
 `git help`
 `git help <verb>` or `git <verb> -h`
 - `verb` e.g. config, clone, add...
-## git config
-### 查看所有配置
-`git config -l`
-及其所在的文件:
-`git config --list --show-origin`
+## 配置
+- 查看所有配置
+  `git config -l`
+  及其所在的文件:
+  `git config --list --show-origin`
 
-### 查看指定配置
-`git config <key>`
-- `key` e.g. user.name...
+- 查看指定配置
+  `git config <key>`
+  - `key` e.g. user.name...
 
-### 设置用户信息
-使用了`--global`选项一次，该命令对全局生效，否则仅对工作目录生效
-```
-git config --global user.name 'hongjiong'
-git config --global user.email hongjiong_zhu@163.com
-```
+- 设置用户信息
+  使用了`--global`选项一次，该命令对全局生效，否则仅对工作目录生效
+  ```
+  git config --global user.name 'hongjiong'
+  git config --global user.email hongjiong_zhu@163.com
+  ```
 
-## git init
-在当前目录下创建一个.git
+## 初始化
+- 在当前目录下创建一个.git
+  `git init`
 
-## git add
-添加需追踪的文件
-```
-$ git add *.c
-$ git add LICENSE
-```
+## 克隆
+- 克隆远程仓库每一个文件，每一个版本
+  `git clone <url> <myLibName>` 
+  - `<url>`指远程仓库路径
+  - `<myLibName>`指克隆库本地命名，不写默认远程仓库名
+  ```
+  $ git clone git@github.com:HongJiong/UsageOfGit.git origin
+  ```
 
-## git commit
-提交追踪的文件到仓库中，进行版本控制
-```
-$ git commit -m 'initial project version'
-```
+## 文件状态
+- 查看目录下文件状态
+  `git status`
+- 信息繁琐用加`-s`
+  ```
+  $ git status -s
+  AM usage-of-git.md
+  ?? DevSidecar-1.7.3.exe
+  ?? Git-2.43.0-64-bit.exe
+  ?? img/
+  ?? progit.pdf
+  ```
+  输出信息有两栏，左栏为暂存区状态，右栏为工作区状态
+  - `??`为未跟踪文件
+  - `A`为新添加到暂存区文件
+  - `M`为修改过文件
+  - `111.md`为暂存后又做了修改文件
 
-## git clone
-克隆远程仓库每一个文件，每一个版本
-`git clone <url> <myLibName>` 
-- `<url>`指远程仓库路径
-- `<myLibName>`指克隆库本地命名，不写默认远程仓库名
-```
-$ git clone https://github.com/libgit2/libgit2 mylibgit
-```
+## 添加
+- 添加文件到暂存区(添加到下一次提交中)
+  ```
+  $ git add *.c
+  $ git add LICENSE
+  ```
 
-## git status
-查看目录下文件状态
-```
-$ git status
-On branch master
+- 撤销
+  - 撤销提交，新的提交替换旧的提交
+    `git commit --amend`
+  - 撤销添加暂存
+    `git reset HEAD <file>`
+  - 撤销修改
+    `git checkout - <file>`
 
-No commits yet
+## 提交
+- 提交暂存区文件到.git仓库
+  `git commit`
+  - 加`-m "this is commit log"`将文件与Log同时提交
+  - 加`-a`将在暂存区文件清单的文件提交，跳过添加动作
+  - 加`-v`将此次提交文件diff呈现在编辑器中
+  - 加`--amend`将此次提交代替上一次提交，撤销提交
 
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-        111.md
-        DevSidecar-1.7.3.exe
-        Git-2.43.0-64-bit.exe
-        img/
-        progit.pdf
-
-nothing added to commit but untracked files present (use "git add" to track)
-
-```
-信息繁琐用`git status -s`
-```
-$ git status -s
-AM 111.md
-?? DevSidecar-1.7.3.exe
-?? Git-2.43.0-64-bit.exe
-?? img/
-?? progit.pdf
-```
-输出信息有两栏，左栏为暂存区状态，右栏为工作区状态
-- `??`为未跟踪文件
-- `A`为新添加到暂存区文件
-- `M`为修改过文件
-- `111.md`为暂存后又做了修改文件
-
-## git add
-跟踪文件到暂存区(将内容添加到下一次提交中)
-```
-$ git add 111.md
-$ git status
-On branch master
-
-No commits yet
-
-Changes to be committed:
-  (use "git rm --cached <file>..." to unstage)
-        new file:   111.md
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-        DevSidecar-1.7.3.exe
-        Git-2.43.0-64-bit.exe
-        img/
-        progit.pdf
-
-```
-
-## git diff
-请注意，git diff本身只显示未暂存的改动
-```
-$ git diff
-diff --git a/111.md b/111.md
-index 56ed569..05d52b3 100644
---- a/111.md
-+++ b/111.md
-@@ -25,16 +25,40 @@
- ![](img/2024-03-21-16-13-57.png '文件状态变化周期')
- - 查看当前文件状态
-   git status
-+
- - 跟踪文件暂存区(将内容添加到下一次提交中)
-   git add
--- 忽略文件(使用失败，代理情)
--  创建一个.gitignore文件
--  ```
--  $ cat .gitignore
--  *.[oa]
--  *~
--  ```
-
-+- 忽略文件(使用失败，待厘清)
-+  - 创建一个.gitignore文件
-+    ```
-+    # 忽略所有的 .a 文件
-```
-用 git diff --staged/--cached 查看已经暂存起来的变化
-```
-$ git diff --staged
-diff --git a/111.md b/111.md
-index 2c8bfc0..56ed569 100644
---- a/111.md
-+++ b/111.md
-@@ -27,6 +27,13 @@
-   git status
- - 跟踪文件暂存区(将内容添加到下一次提交中)
-   git add
-+- 忽略文件(使用失败，代理情)
-+  创建一个.gitignore文件
-+  ```
-+  $ cat .gitignore
-+  *.[oa]
-+  *~
-+  ```
-
-
- 配置git来忽略指定的文件和文件模式、迅速而简单地撤销误操作、如何浏览你的项目的历史版本以及不同提交(commits)之间的差异、如何向你的远程仓库推送(push)、如何从你的
-远程仓库拉取(pull)文件。
-@@ -149,3 +156,4 @@ Untracked files:
-
- # 待处理
-```
+## 差异
+- 请注意，`git diff`本身只显示未暂存的改动
+- 加`--staged`或`--cached`查看已经暂存起来的变化
 - 配置difftool
-  git difftool --tool-help
+  `git difftool --tool-help`
 
-## git commit
-将暂存区文件提交到git仓库
-`git commit -m "this commit log"`将文件与log同时提交
-`git commit -a`将跟踪过的文件提交，跳过暂存动作
-`git commit -v`将此次提交文件diff呈现在编辑器中
-```
-$ git commit -m "commit test 3rd by John"
-[master 9d285b2] commit test 3rd by John
- 1 file changed, 0 insertions(+), 0 deletions(-)
- create mode 100644 progit.pdf
-
-$ git status
-On branch master
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-        modified:   111.md
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-        .111.md.swp
-        DevSidecar-1.7.3.exe
-        Git-2.43.0-64-bit.exe
-
-no changes added to commit (use "git add" and/or "git commit -a")
-
-$ git add 111.md
-
-$ git commit -m "commit test 4th by John"
-[master 58830be] commit test 4th by John
- 1 file changed, 95 insertions(+), 7 deletions(-)
-
-$ git status
-On branch master
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-        .111.md.swp
-        DevSidecar-1.7.3.exe
-        Git-2.43.0-64-bit.exe
-
-nothing added to commit but untracked files present (use "git add" to track)
-
-```
-
-## git rm
-要从Git中移除某个文件，就必须要从已跟踪文件清单中移除（确切地说，是从暂存区域移除，然后提交
-- `git rm`会连带删除源文件
-- 移除暂存区的文件时，会有保护机制，需要`git rm -f`，也会连带删除源文件
-    ```
-    $ git rm 111.md
-    error: the following file has changes staged in the index:
-        111.md
-    (use --cached to keep the file, or -f to force removal)
-
-    $ git rm -f 111.md
-    rm '111.md'
-
-    $ git status
-    On branch master
-    Untracked files:
-    (use "git add <file>..." to include in what will be committed)
-            .111.md.swp
-            DevSidecar-1.7.3.exe
-            Git-2.43.0-64-bit.exe
-
-    nothing added to commit but untracked files present (use "git add" to track)
-
-    ```
+## 移除
+要从git中移除某个文件，就必须要从暂存区文件清单中移除，然后提交
+- `git rm`会连带移除源文件
+- 移除暂存区的文件时，会有保护机制，需要`git rm -f`，也会连带移除源文件
 - `git rm -cached`仅移除暂存区
+- 多文件移除`git rm <glob>`[^2]
+
+## 移动/重命名
+- `git mv <pathSrc> <pathDes>`
+  相当于
   ```
-  $ git status
-    On branch master
-    Changes to be committed:
-    (use "git restore --staged <file>..." to unstage)
-            new file:   111.md
-
-    Untracked files:
-    (use "git add <file>..." to include in what will be committed)
-            .111.md.swp
-            DevSidecar-1.7.3.exe
-            Git-2.43.0-64-bit.exe
-
-    $ git rm --cached 111.md
-    rm '111.md'
-
-    $ git status
-    On branch master
-    Untracked files:
-    (use "git add <file>..." to include in what will be committed)
-            .111.md.swp
-            111.md
-            DevSidecar-1.7.3.exe
-            Git-2.43.0-64-bit.exe
-
-    nothing added to commit but untracked files present (use "git add" to track)
-
-  ```
-  - 多文件移除`git rm <glob>`[^2]
-  ```
-  # 移除log文件夹里所有.log文件
-  $ git rm log/\*.log
-  # 移除所有~结尾文件
-  $ git rm git rm \*~
+  $ mv <pathSrc> <pathDes>
+  $ git rm <pathSrc>
+  $ git add <pathDes>
   ```
 
-## git mv
-重命名or移动
-```
-$ git mv README.md README
-$ git status
-On branch master
-Your branch is up-to-date with 'origin/master'.
-Changes to be committed:
-(use "git reset HEAD <file>..." to unstage)
-renamed: README.md -> README
-```
-相当于
-```
-$ mv README.md README
-$ git rm README.md
-$ git add README
-```
+## 重置(reset)
+- 
+  `git reset`
+  - 加`HEAD <file>`，重定位`HEAD`指针，撤销添加暂存的文件
+
+## (checkout)
+- 
+  `git checkout`
+  - 加`HEAD - <file>`，重定位`HEAD`指针，撤销修改的文件
+
+## 查看提交历史
+- `git log`
+- 常用选项|说明
+  ---|---
+  -p | 按补丁格式显示每个提交引入的差异
+  --stat | 显示每次提交的文件修改统计信息
+  --shortstat | 只显示 --stat 中最后的行数修改添加移除统计
+  --name-only | 仅在提交信息后显示已修改的文件清单
+  --name-status | 显示新增、修改、删除的文件清单
+  --abbrev-commit | 仅显示 SHA-1 校验和所有 40 个字符中的前几个字符
+  --relative-date | 使用较短的相对时间而不是完整格式显示日期（比如“2 weeks ago”）
+  --graph 在日志旁以 | ASCII 图形显示分支与合并历史
+  --pretty | 使用其他格式显示历史提交信息。可用的选项包括 oneline、short、full、fuller 和 format（用来定义自己的格式）
+  --oneline | --pretty=oneline --abbrev-commit 合用的简写
+  限制输出选项 |
+  -<n> | 仅显示最近的 n 条提交。
+  --since, --after | 仅显示指定时间之后的提交
+  --until, --before | 仅显示指定时间之前的提交
+  --author | 仅显示作者匹配指定字符串的提交
+  --committer | 仅显示提交者匹配指定字符串的提交
+  --grep | 仅显示提交说明中包含指定字符串的提交
+  -S | 仅显示添加或删除内容匹配指定字符串的提交
+
+  e.g.
+  ```
+  $ git log --pretty="%h - %s" --author='Junio C Hamano' --since="2008-10-01" --before="2008-11-01" --no-merges -- t/
+  5610e3b - Fix testcase failure when extended attributes are in use
+  acd3b9e - Enhance hold_lock_file_for_{update,append}() API
+  f563754 - demonstrate breakage of detached checkout with symbolic link HEAD
+  d1a43f2 - reset --hard/read-tree --reset -u: remove unmerged new paths
+  51a94af - Fix "checkout --track -b newbranch" on detached HEAD
+  b0ad11e - pull: allow "git pull origin $something:$current_branch" into an unborn branch
+  ```
+
+
 
 # 快速跳转
 [快速返回](#快速返回)
