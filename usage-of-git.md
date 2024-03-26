@@ -1,47 +1,5 @@
 # git for windown
-- [git for windown](#git-for-windown)
-- [概念](#概念)
-- [基础流程](#基础流程)
-  - [1.配置并初始化一个仓库(repository)](#1配置并初始化一个仓库repository)
-  - [2.开始或停止跟踪(track)文件、暂存(stage)或提交(commit)更改](#2开始或停止跟踪track文件暂存stage或提交commit更改)
-  - [3.配置git来忽略指定的文件](#3配置git来忽略指定的文件)
-  - [4.历史](#4历史)
-  - [5.远程仓库](#5远程仓库)
-  - [6.别名](#6别名)
-- [分支](#分支)
-  - [查看](#查看)
-  - [新分支](#新分支)
-  - [删除](#删除)
-  - [合并](#合并)
-  - [远程](#远程)
-  - [变基](#变基)
-- [快速返回](#快速返回)
-- [git命令](#git命令)
-  - [版本更新](#版本更新)
-  - [帮助](#帮助)
-  - [配置](#配置)
-  - [初始化](#初始化)
-  - [克隆](#克隆)
-  - [文件状态](#文件状态)
-  - [添加](#添加)
-  - [提交](#提交)
-  - [差异](#差异)
-  - [移除](#移除)
-  - [移动/重命名](#移动重命名)
-  - [重置(reset)](#重置reset)
-  - [查看提交历史](#查看提交历史)
-  - [远程操作](#远程操作)
-  - [远程拉取](#远程拉取)
-  - [远程推送](#远程推送)
-  - [标签](#标签)
-  - [(git show)](#git-show)
-  - [分支](#分支-1)
-  - [检出](#检出)
-  - [合并](#合并-1)
-  - [变基](#变基-1)
-- [快速跳转](#快速跳转)
-- [待处理](#待处理)
-
+记录一些会用到的操作/功能
 # 概念
 **git有三种状态**
 - 已修改(modified)，表示修改了文件，但还没保存到数据库中
@@ -125,6 +83,16 @@
     [^2]:指 shell 所使用的简化了的正则表达式。 星号（*）匹配零个或多个任意字符；[abc] 匹配任何一个列在方括号中的字符 （这个例子要么匹配一个 a，要么匹配一个 b，要么匹配一个 c）； 问号（?）只匹配一个任意字符；如果在方括号中使用短划线分隔两个字符， 表示所有在这两个字符范围内的都可以匹配（比如 [0-9] 表示匹配所有 0 到 9 的数字）。 使用两个星号（\*\*）表示匹配任意中间目录，比如 a/\*\*/z 可以匹配 a/z 、 a/b/z 或 a/b/c/z 等。
 
 ## 4.历史
+- 查看提交信息\
+  `git show <hashHistory>`
+  - 查看当前版本的父提交\
+    `git show HEAD^^`\
+    或 `git show 'HEAD^'`\
+    或 `git show ~HEAD`
+  - 查看当前版本的第n代提交\
+    `git show HEAD~<n>`\
+    或 `git show HEAD<n * '~'>`
+
 - 查看提交历史，不传入参数按时间先后顺序列出所有的提交，列出每个提交的 SHA-1 校验和、作者的名字和电子邮件地址、提交时间以及提交说明。\
   `git log`
   ```
@@ -140,6 +108,22 @@
 
     add img for usage-of-github
   ```
+
+- 查看历史HEAD和分支引用所指向的历史
+  `git reflog`
+  ```
+  $ git reflog
+  734713b HEAD@{0}: commit: fixed refs handling, added gc auto, updated
+  d921970 HEAD@{1}: merge phedders/rdocs: Merge made by the 'recursive'
+  strategy.
+  1c002dd HEAD@{2}: commit: added some blame and merge stuff
+  1c36188 HEAD@{3}: rebase -i (squash): updating HEAD
+  95df984 HEAD@{4}: commit: # This is a combination of two commits.
+  1c36188 HEAD@{5}: rebase -i (squash): updating HEAD
+  7e05da5 HEAD@{6}: rebase -i (pick): updating HEAD
+  ```
+  - 使用`@{n}`来引用reflog中提交记录\
+    `git show HEAD@{5}`查看五次前所指向的提交
 
 - 标签
   - 列出已有\
@@ -232,6 +216,9 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   - `ahead 3, behind 1`代表本地还有三个提交还没有推送到服务器上，服务器有一次提交没有合入到本地
   - 服务器信息基于本地，所以要先`git fetch --all`
 
+- 查看branch1中有哪些不在branch0的提交中\
+  `git log <branch0> <branch1>`
+
 ## 新分支
 - 创建，从`HEAD`看出没有切换到新分支\
   `git branch <branchName>`
@@ -261,36 +248,37 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
     |![](img/2024-03-25-18-29-10.png)||
 
 - 冲突合并：需合并的两个不同的分支中，对同一个文件的同一个部分进行了不同的修改，不会自动提交
-  1.  ```
-      $ git merge iss53
-      Auto-merging index.html
-      CONFLICT (content): Merge conflict in index.html
-      Automatic merge failed; fix conflicts and then commit the result.
-      ```
-  2.  用git status查看冲突(unmerged)信息
-      ```
-      $ git status
-      On branch master
-      You have unmerged paths.
-        (fix conflicts and run "git commit")
+  1. `git merge`
+    ```
+    $ git merge iss53
+    Auto-merging index.html
+    CONFLICT (content): Merge conflict in index.html
+    Automatic merge failed; fix conflicts and then commit the result.
+    ```
+  2. 用git status查看冲突(unmerged)信息
+    ```
+    $ git status
+    On branch master
+    You have unmerged paths.
+      (fix conflicts and run "git commit")
 
-      Unmerged paths:
-        (use "git add <file>..." to mark resolution)
+    Unmerged paths:
+      (use "git add <file>..." to mark resolution)
 
-          both modified:      index.html
-      no changes added to commit (use "git add" and/or "git commit -a")
-      ```
+        both modified:      index.html
+    no changes added to commit (use "git add" and/or "git commit -a")
+    ```
   3.  打开冲突文件，其中包含以而写特殊区段
-      > `=======`的上半部分为当前分支(HEAD -> master)的index.html文件，下半部分为目标分支(iss53)的index.html文件
-      ```
-      <<<<<<< HEAD:index.html
-      <div id="footer">contact : email.support@github.com</div>
-      =======
-      <div id="footer">
-      please contact us at support@github.com
-      </div>
-      >>>>>>> iss53:index.html
-      ```
+    > `=======`的上半部分为当前分支(HEAD -> master)的index.html文件，下半部分为目标分支(iss53)的index.html文件
+    ```
+    <<<<<<< HEAD:index.html
+    <div id="footer">contact : email.support@github.com</div>
+    =======
+    <div id="footer">
+    please contact us at support@github.com
+    </div>
+    >>>>>>> iss53:index.html
+    ```
   4.  手动更改冲突文件，并对其`git add`暂存，就能解决冲突，再`git commit`
 
 ## 远程
@@ -341,8 +329,14 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   ~~~
   ![](img/2024-03-26-15-59-12.png)
 
-[快速跳转](#快速跳转)
+# SSH
+**[绑定主机，在设置的权限下免密操作github](./usage-shh-token.md#ssh)**
+
+[网上说明](https://blog.csdn.net/weixin_42310154/article/details/118340458)
+
+
 # 快速返回
+[快速跳转](#快速跳转)
 
 
 # git命令
@@ -461,6 +455,7 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
 - `git log`
 - 常用选项|说明
   ---|---
+  -g | 带上reflog
   -p | 按补丁格式显示每个提交引入的差异
   --stat | 显示每次提交的文件修改统计信息
   --shortstat | 只显示 --stat 中最后的行数修改添加移除统计
@@ -470,6 +465,7 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   --relative-date | 使用较短的相对时间而不是完整格式显示日期（比如“2 weeks ago”）
   --graph 在日志旁以 | ASCII 图形显示分支与合并历史
   --pretty | 使用其他格式显示历史提交信息。可用的选项包括 oneline、short、full、fuller 和 format（用来定义自己的格式）
+  --abbrev-commit | 显示简短且唯一的值
   --oneline | --pretty=oneline --abbrev-commit 合用的简写
   限制输出选项 |
   -<n> | 仅显示最近的 n 条提交。
@@ -481,7 +477,7 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   -S | 仅显示添加或删除内容匹配指定字符串的提交
 
   e.g.
-  ~~~
+  ```
   $ git log --pretty="%h - %s" --author='Junio C Hamano' --since="2008-10-01" --before="2008-11-01" --no-merges -- t/
   5610e3b - Fix testcase failure when extended attributes are in use
   acd3b9e - Enhance hold_lock_file_for_{update,append}() API
@@ -489,18 +485,20 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   d1a43f2 - reset --hard/read-tree --reset -u: remove unmerged new paths
   51a94af - Fix "checkout --track -b newbranch" on detached HEAD
   b0ad11e - pull: allow "git pull origin $something:$current_branch" into an unborn branch
-  ~~~
+  ```
 
   - 查看分支历史
-    ~~~
-    git log --oneline --decorate --graph --all
+    ```
+    $ git log --oneline --decorate --graph --all
     * c2b9e (HEAD, master) made other changes
     | * 87ab2 (testing) made a change
     |/
     * f30ab add feature #32 - ability to add new formats to the
     * 34ac2 fixed bug #1328 - stack overflow under certain conditions
     * 98ca9 initial commit of my project
-    ~~~
+    ```
+- 查看`HEAD`和分支引用所指向的历史\
+  `git reflog`
 
 ## 远程操作
 `git remote`查看LibName
@@ -537,7 +535,10 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
 - 加`-d <tagName>`删除标签
 
 ## (git show)
+`git show`
 - 加`<tagName>`打印标签信息
+- 加`HEAD@{5}`查看HEAD在5次前指向的提交
+- 加
 
 ## 分支
 获取所有分支列表\
