@@ -160,11 +160,22 @@
 - 取消别名
   `git config --global --unset alias.<newName>`
 
-[快速跳转](#快速跳转)
-# 快速返回
-
 # 分支
 Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，通常称`HEAD`。Git的默认分支名字是 master，与其它分支没有区别。
+
+## 查看
+- 获取所有分支列表，`*`代`表HEAD->`
+  `git branch`
+  ```
+  $ git branch
+    iss53
+  * master
+    testing
+  ```
+- 获取每个分支最后一次提交
+  `git branch -v`
+- 过滤已/未合并分支
+  `git branch --merged/--no-merged`
 
 ## 新分支
 - 创建，从`HEAD`看出没有切换到新分支
@@ -177,7 +188,8 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   ![](img/2024-03-25-17-48-32.png)
 
 ## 删除
-`git branch -d <branchName>`
+- 只能删除未合并分支
+  `git branch -d <branchName>`
 
 ## 合并
 - 将所在分支与目标分支合并，并自动提交
@@ -189,7 +201,7 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
     |:---:|---|
     |↓||
     |![](img/2024-03-25-18-29-10.png)||
-    
+
 - 冲突合并：需合并的两个不同的分支中，对同一个文件的同一个部分进行了不同的修改，不会自动提交
   1.  ```
       $ git merge iss53
@@ -224,6 +236,10 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   4.  手动更改冲突文件，并对其`git add`暂存，就能解决冲突，再`git commit`
   
     
+[快速跳转](#快速跳转)
+# 快速返回
+
+
 # git命令
 ## 版本更新
 2.17.1之前的，使用
@@ -254,12 +270,14 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   git config --global user.email hongjiong_zhu@163.com
   ```
 
-  - 别名
-    - 加`[level] alias.<newName> <cmdName>`创建cmd别名
-    - 加`[level] -l | grep alias`查看定义别名
-    - 加`[level] --unset alias.<newName>`取消别名
-    - e.g.`git config --global alias.s 'status -s'`
+- 设置cmd别名
+  - 加`[level] alias.<newName> <cmdName>`创建cmd别名
+  - 加`[level] -l | grep alias`查看定义别名
+  - 加`[level] --unset alias.<newName>`取消别名
+  - e.g.`git config --global alias.s 'status -s'`
 
+- 设置凭证助手，无需每次远程操作输入账号密码
+  `git config --global credential.helper cache`
 
 ## 初始化
 - 在当前目录下创建一个.git
