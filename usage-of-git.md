@@ -1,12 +1,19 @@
 # git for windown
 记录一些会用到的操作/功能
 # 概念
-**git有三种状态**
-- 已修改(modified)，表示修改了文件，但还没保存到数据库中
-- 已暂存(staged)，表示对一个已修改的文件做了标记，使之包含在下次提交的快照[^1]中
-- 已提交(committed)，表示数据已经安全保存在本地数据库中
+- git有三种状态
+  - 已修改(modified)，表示修改了文件，但还没保存到数据库中
+  - 已暂存(staged)，表示对一个已修改的文件做了标记，使之包含在下次提交的快照[^1]中
+  - 已提交(committed)，表示数据已经安全保存在本地数据库中
   
 [^1]:快照（待补充）
+
+- Git作为一个系统来管理并操纵三棵树(文件的集合):\
+  |树   |用途   |
+  |---|---|
+  |HEAD   |上一次提交的快照,下一次提交的父节点   |
+  |Index   |预期的下一次提交的快照(暂存区)   |
+  |WorkingDirectory   |沙盒/工作目录   |
 
 **git基本工作流程**\
 ![](img/2024-03-21-10-19-03.png '工作目录、暂存区域、git仓库')
@@ -50,7 +57,8 @@
 
 - 撤销
   - 撤销提交，新的提交替换旧的提交\
-    `git commit --amend`
+    `git commit --amend`\
+    - 加`--no-edit`新提交使用旧提交的日志
   - 撤销添加暂存\
     `git reset HEAD <file>`
   - 撤销修改\
@@ -280,6 +288,9 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
     >>>>>>> iss53:index.html
     ```
   4.  手动更改冲突文件，并对其`git add`暂存，就能解决冲突，再`git commit`
+  
+- 放弃冲突: 有合并冲突时, `git merge --abort`可以恢复到合并前的状态 
+- 忽略空白冲突: `git merge --Xignore-all-space/--Xignore-space-change`
 
 ## 远程
 - 推送\
@@ -305,22 +316,27 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   `git push origin --delete <branchName>`
 
 ## 变基
-将提交到某一分支上的所有修改都移至另一分支上，操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交，**会改变提交历史**
-- 提取在 C4 中引入的补丁和修改，然后在 C3 的基础上应用一次
-  1. 检出experiment分支，然后变基到master分支上
-     ~~~
-     $ git checkout experiment
-     $ git rebase master
-     First, rewinding head to replay your work on top of it...
-     Applying: added staged command
-     ~~~
-     ![](img/2024-03-26-14-47-53.png)
-  2. 回到master进行一次合并
-     ~~~
-     $ git checkout master
-     $ git merge experiment
-     ~~~
-     ![](img/2024-03-26-14-52-21.png)
+- 将单个提交中的修改作为一个新的提交引入到当前的分支上/
+  `git cherry-pick <commitedID>`/
+  ![](img/2024-03-27-18-09-04.png)
+
+  
+- 将提交到某一分支上的所有修改都移至另一分支上，操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交，**会改变提交历史**
+  - 提取在 C4 中引入的补丁和修改，然后在 C3 的基础上应用一次
+    1. 检出experiment分支，然后变基到master分支上
+      ~~~
+      $ git checkout experiment
+      $ git rebase master
+      First, rewinding head to replay your work on top of it...
+      Applying: added staged command
+      ~~~
+      ![](img/2024-03-26-14-47-53.png)
+    2. 回到master进行一次合并
+      ~~~
+      $ git checkout master
+      $ git merge experiment
+      ~~~
+      ![](img/2024-03-26-14-52-21.png)
 
 - 将`client`中的修改合并到`master`，但暂时并不想合并`server`中的修改，即 C8 和 C9
   ~~~
@@ -429,6 +445,22 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
     Dropped refs/stash@{0} (29d385a81d163dfd45a452a2ce816487a6b8b014)
     ```
 
+## 清理工作目录
+从工作目录移除未被追踪的文件
+`git clean -d`
+- 加`-n` 或 `--dry-run`, 不会移除, 输出要删除什么
+- 加`-f`强制移除
+- 加`-x`移除忽略文件
+- 加`-i` 或 `--interactive`, 交互模式
+
+## 文件标注
+查看文件来自哪个提交和提交者\
+`git blame <file>`
+- 限制文件69到82行\
+  `git blame -L 68,82 MakeFile`
+
+
+
 # SSH
 **[绑定主机，在设置的权限下免密操作github](./usage-shh-token.md#ssh)**
 
@@ -476,6 +508,8 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
 
 - 设置凭证助手，无需每次远程操作输入账号密码\
   `git config --global credential.helper cache`
+  - 加`cache`, 账号密码放在内存中, 时效15min
+  - 加`store`, 账号密码放在磁盘中, 时效永久
 
 ## 初始化
 - 在当前目录下创建一个.git\
@@ -557,10 +591,38 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   $ git add <pathDes>
   ```
 
-## 重置(reset)
-- 
-  `git reset`
-  - 加`HEAD <file>`，重定位`HEAD`指针，撤销添加暂存的文件
+## 重置
+`git reset`命令按以下顺序重写三棵树, 加选项停止
+![](img/2024-03-27-16-04-19.png)
+1. 移动`HEAD`指向分支的指向(撤销上一次提交), 加`--soft`到此停止\
+   `git reset --soft HEAD~`\
+   ![](img/2024-03-27-16-05-40.png)
+2. 使Index(暂存区)看起来像HEAD(撤销上一次提交与暂存), 默认或者加`--mixed`到此停止\
+   `git reset --mixed HEAD~`\
+   ![](img/2024-03-27-16-08-33.png)
+3. 使工作目录看起来像Index(撤销上一次所有操作, **无法恢复**), 加`--hard`才会到此\
+   `git reset --hard HEAD~`\
+   ![](img/2024-03-27-16-11-27.png)
+
+- 加文件路径不会动`HEAD`(局部回滚), 重置/撤销暂存文件\
+  `git reset (--hard/--mixed) HEAD <file>`
+
+## 检出
+- 不带文件路径时, 移动`HEAD`本身的指向，并将工作目录/文件恢复到`HEAD`指向的分支版本(相应分支最后一次提交)，原内容未提交不会保存\
+  `git checkout`\
+  ![](img/2024-03-27-16-34-17.png)
+  - 加`<branchName>`切换分支, 相当于`git reset --hard <branchName>`
+  - 加`-b <branchName>`创建并切换分支
+
+- 带文件路径时, 不会移动`HEAD`, 重置文件\
+  `git checkout HEAD - <file>`相当于`git reset --hard HEAD <file>`
+
+## 还原提交
+反向cherry-pick操作, 将父提交当成新提交合入主线\
+`git revert -m 1`
+- `-m <n>`指`mainline`要保留下来的分支, 撤销合并会使用到
+![](img/2024-03-27-18-35-30.png)
+- `-m 1`指`C6`所在分支, revert出的`^M`与`C6`完全一样
 
 ## 查看提交历史
 - `git log`
@@ -658,13 +720,6 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
 - 加`-v`获取每个分支最后一次提交
 - 加`-vv`获取每个分支详细信息
 - 加`-d <branchName>`删除未合并分支
-
-## 检出
-- 移动`HEAD`指针，并将工作目录/文件恢复到`HEAD`指向的分支版本(相应分支最后一次提交)，原内容不会保存\
-  `git checkout`
-  - 加`HEAD - <file>`撤销修改的文件
-  - 加`<branchName>`切换分支
-  - 加`-b <branchName>`创建并切换分支
 
 ## 合并
 将所在分支与目标分支合并，并自动提交
