@@ -329,11 +329,110 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   ~~~
   ![](img/2024-03-26-15-59-12.png)
 
+# Git Tool
+## 交互式暂存
+打开交互式终端, 输出与`git status`基本相同的信息, 左侧为暂存区, 右侧为未暂存的修改文件, 在`What now`输入相应cmd进行git文件操作\
+- `git add -i` 或 `git add --interactive`
+  ```
+  $ git add -i
+           staged   unstaged  path
+    1:  unchanged      +0/-1  TODO
+    2:  unchanged      +1/-1  index.html
+    3:  unchanged      +5/-1  lib/simplegit.rb
+  *** Commands ***
+    1: [s]tatus   2: [u]pdate   3: [r]evert   4: [a]dd untracked
+    5: [p]atch    6: [d]iff     7: [q]uit     8: [h]elp
+  What now>
+  ```
+
+- 暂存与取消暂存文件
+  - `What now`键入`u`或`2`, 选择要暂存哪些文件(`TODO` & `index.html`)
+  - `Update>>`直接回车退出, 并暂存`*`代表的已选择文件
+    ```
+    What now> u
+            staged unstaged path
+      1: unchanged    +0/-1 TODO
+      2: unchanged    +1/-1 index.html
+      3: unchanged    +5/-1 lib/simplegit.rb
+    Update>> 1,2
+              staged unstaged path
+      * 1: unchanged    +0/-1 TODO
+      * 2: unchanged    +1/-1 index.html
+        3: unchanged    +5/-1 lib/simplegit.rb
+    Update>> \n
+    updated 2 paths
+    ```
+  - 键入`r`或`3`, 选择取消暂存哪些文件, 操作如上
+  - 键入`d`或`6`, 显示暂存区别, 类似于`git diff --cached` 
+  - 键入`p`或`5`, 选择部分暂存哪些文件，对已选择文件的每一个部分会一一显示文件区别并询问是否想要暂存它们(暂存补丁)
+    - 键入`?`可以显示所有可以使用的命令列表
+
+## 贮藏
+- **跟踪文件**的修改与暂存的改动, 将其保存到一个栈上, 然后可以在不同的分支上重新应用这些改动\
+  `git stash` 或 `git stash push`
+  ```
+  $ git stash
+  Saved working directory and index state \
+  "WIP on master: 049d078 added the index file"
+  HEAD is now at 049d078 added the index file
+  (To restore them type "git stash apply")
+  ```
+  - 加`--include-untracked` 或 `-u`贮藏未跟踪文件, 不包括忽略文件
+  - 加`--all` 或 `-a`贮藏所有文件
+
+- 查看\
+  `git stash list`
+  ```
+  $ git stash list
+  stash@{0}: WIP on master: 049d078 added the index file
+  stash@{1}: WIP on master: c264051 Revert "added file_size"
+  stash@{2}: WIP on master: 21d80a5 added number to log
+  ```
+
+- 应用\
+  `git stash apply`
+  ```
+  $ git stash apply
+  On branch master
+  Changes not staged for commit:
+    (use "git add <file>..." to update what will be committed)
+    (use "git checkout -- <file>..." to discard changes in working directory)
+      modified:   index.html
+      modified:   lib/simplegit.rb
+  no changes added to commit (use "git add" and/or "git commit -a")
+  ```
+  - 默认应用最近一个, 其它可以加引用, 如`git stash apply stash@{2}`
+  - 由于贮藏只有`有修改与未提交的文件`, 在不同分支应用时之前暂存的文件却没有重新暂存, 必须`git stash apply --index`回到原来的位置来尝试重新应用暂存的修改
+
+- 移除\
+  `git stash drop stash@{n}`
+
+- 应用并移除\
+  `git stash pop`
+
+- 用贮藏创建分支\
+  `git stash branch <branchName>`
+  - 创建一个新分支并检出贮藏工作时所在的提交, 重新在那应用工作, 应用成功后丢弃贮藏
+    ```
+    git stash branch testchanges
+    M   index.html
+    M   lib/simplegit.rb
+    Switched to a new branch 'testchanges'
+    On branch testchanges
+    Changes to be committed:
+      (use "git reset HEAD <file>..." to unstage)
+        modified:   index.html
+    Changes not staged for commit:
+      (use "git add <file>..." to update what will be committed)
+      (use "git checkout -- <file>..." to discard changes in working directory)
+        modified:   lib/simplegit.rb
+    Dropped refs/stash@{0} (29d385a81d163dfd45a452a2ce816487a6b8b014)
+    ```
+
 # SSH
 **[绑定主机，在设置的权限下免密操作github](./usage-shh-token.md#ssh)**
 
 [网上说明](https://blog.csdn.net/weixin_42310154/article/details/118340458)
-
 
 # 快速返回
 [快速跳转](#快速跳转)
@@ -414,6 +513,18 @@ Git的分支，其实本质上仅仅是**指向提交对象的可变指针**，�
   ```
   $ git add *.c
   $ git add LICENSE
+  ```
+- 打开交互式终端, 输出与`git status`基本相同的信息, 左侧为暂存区, 右侧为未暂存的修改文件, 在`What now`输入相应cmd进行git文件操作
+  ```
+  $ git add -i
+           staged   unstaged  path
+    1:  unchanged      +0/-1  TODO
+    2:  unchanged      +1/-1  index.html
+    3:  unchanged      +5/-1  lib/simplegit.rb
+  *** Commands ***
+    1: [s]tatus   2: [u]pdate   3: [r]evert   4: [a]dd untracked
+    5: [p]atch    6: [d]iff     7: [q]uit     8: [h]elp
+  What now>
   ```
 
 ## 提交
